@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Cb4pIabehqjR2Ck4RpVZOj0cwuzXtmeDmKDd1xmKNoe3RA4nozPlNOS0FxYq3cGq8LpRnBmG0pXsEeoNWGev/w==",
+  "dgSpecHash": "BLfXpSb00Lo7JaTQ5EkfCj3gfelfUGfxAroOanqNQ9y6HTl+epIDVMLCS69lZ/23uoFywQ0Qt6ZxB0eyMbeJHQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Mihai\\Desktop\\RepoDAC\\datc2020\\Pescaru Mihai\\L04\\L02.csproj",
+  "projectFilePath": "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\CityAlert.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Mihai\\.nuget\\packages\\microsoft.csharp\\4.3.0\\microsoft.csharp.4.3.0.nupkg.sha512",
     "C:\\Users\\Mihai\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",

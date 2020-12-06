@@ -5247,11 +5247,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Mihai\\Desktop\\RepoDAC\\datc2020\\Pescaru Mihai\\L04\\L02.csproj",
-      "projectName": "L02",
-      "projectPath": "C:\\Users\\Mihai\\Desktop\\RepoDAC\\datc2020\\Pescaru Mihai\\L04\\L02.csproj",
+      "projectUniqueName": "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\CityAlert.csproj",
+      "projectName": "CityAlert",
+      "projectPath": "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\CityAlert.csproj",
       "packagesPath": "C:\\Users\\Mihai\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Mihai\\Desktop\\RepoDAC\\datc2020\\Pescaru Mihai\\L04\\obj\\",
+      "outputPath": "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Mihai\\AppData\\Roaming\\NuGet\\NuGet.Config",

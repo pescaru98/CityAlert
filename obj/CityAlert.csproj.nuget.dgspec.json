@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\L02.csproj": {}
+    "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\CityAlert.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\L02.csproj": {
+    "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\CityAlert.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\L02.csproj",
-        "projectName": "L02",
-        "projectPath": "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\L02.csproj",
+        "projectUniqueName": "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\CityAlert.csproj",
+        "projectName": "CityAlert",
+        "projectPath": "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\CityAlert.csproj",
         "packagesPath": "C:\\Users\\Mihai\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Mihai\\Desktop\\CityAlertRepo\\obj\\",
         "projectStyle": "PackageReference",
