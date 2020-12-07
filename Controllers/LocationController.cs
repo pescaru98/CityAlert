@@ -32,7 +32,7 @@ namespace CityAlert.Controllers
         }
 
         [HttpGet("GetById/{partitionKey}/{rowKey}")]
-        public async Task<List<Location>> GetLocationById(string partitionKey, string rowKey)
+        public async Task<Location> GetLocationById(string partitionKey, string rowKey)
         {
             return await _locationRepository.GetLocationById(partitionKey,rowKey);
         }
@@ -76,18 +76,18 @@ namespace CityAlert.Controllers
         }
 
         [HttpGet("GetByCoordinates/{latitude}/{longitude}")]
-        public async Task<List<Location>> GetByCoordinates(double latitude, double longitude)
+        public async Task<Location> GetByCoordinates(double latitude, double longitude)
         {
 
               return await _locationRepository.GetLocationByCoordinates(latitude,longitude);
 
         }
 
-        [HttpGet("GetByCoordinates/{latitude}/{longitude}/{radius}")]
+/*        [HttpGet("GetByCoordinates/{latitude}/{longitude}/{radius}")]
         public async Task<List<Location>> GetByCoordinatesInRadius(double latitude, double longitude,double radiusInMeters)
         {
-             return await _locationRepository.GetLocationByCoordinatesInRadius(latitude, longitude, radiusInMeters);
-        }
+             return await _locationRepository.GetLocationsByCoordinatesInRadius(latitude, longitude, radiusInMeters);
+        }*/
 
 
     }

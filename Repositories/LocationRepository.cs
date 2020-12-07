@@ -38,9 +38,9 @@ namespace CityAlert.Repositories
         public async Task CreateLocation(Location location)
         {
             Guid GeneratedRowKey = Guid.NewGuid();
-            Task<List<Location>> locationTask = GetLocationById(location.PartitionKey, GeneratedRowKey.ToString());
-            List<Location> locationResult = locationTask.Result;
-            if (!locationResult.Any())
+            Task<Location> locationTask = GetLocationById(location.PartitionKey, GeneratedRowKey.ToString());
+            Location locationResult = locationTask.Result;
+            if (locationResult == null)
             {
                 location.RowKey = GeneratedRowKey.ToString();
                 var insertOperation = TableOperation.Insert(location);
@@ -53,8 +53,7 @@ namespace CityAlert.Repositories
             }
         }
 
-
-        public async Task<List<Location>> GetLocationById(string partitionKey, string rowKey)
+        public async Task<Location> GetLocationById(string partitionKey, string rowKey)
         {
             var locations = new List<Location>();
 
@@ -71,7 +70,7 @@ namespace CityAlert.Repositories
                 locations.AddRange(resultSegment.Results);
             } while (token != null);
 
-            return locations;
+            return locations.FirstOrDefault();
         }
 
         public async Task<List<Location>> GetLocations()
@@ -93,7 +92,27 @@ namespace CityAlert.Repositories
             return locations;
         }
 
-        public async Task<List<Location>> GetLocationByCoordinates(double latitude, double longitude)
+        public async Task<Location> GetLocationByCoordinates(double latitude, double longitude)
+        {
+            var locations = new List<Location>();
+
+            TableQuery<Location> query = new TableQuery<Location>()
+               .Where(TableQuery.GenerateFilterConditionForDouble("Latitude", QueryComparisons.Equal, latitude))
+               .Where(TableQuery.GenerateFilterConditionForDouble("Longitude", QueryComparisons.Equal, longitude));
+            TableContinuationToken token = null;
+            do
+            {
+                TableQuerySegment<Location> resultSegment = await _locationsTable.ExecuteQuerySegmentedAsync(query, token);
+
+                token = resultSegment.ContinuationToken;
+
+                locations.AddRange(resultSegment.Results);
+            } while (token != null);
+
+            return locations.FirstOrDefault();
+        }
+
+/*        public async Task<List<Location>> GetLocationsByCoordinatesInRadius(double latitude, double longitude, double radiusInMeters)
         {
             var locations = new List<Location>();
 
@@ -111,35 +130,15 @@ namespace CityAlert.Repositories
             } while (token != null);
 
             return locations;
-        }
-
-        public async Task<List<Location>> GetLocationByCoordinatesInRadius(double latitude, double longitude, double radiusInMeters)
-        {
-            var locations = new List<Location>();
-
-            TableQuery<Location> query = new TableQuery<Location>()
-               .Where(TableQuery.GenerateFilterConditionForDouble("Latitude", QueryComparisons.Equal, latitude))
-               .Where(TableQuery.GenerateFilterConditionForDouble("Longitude", QueryComparisons.Equal, longitude));
-            TableContinuationToken token = null;
-            do
-            {
-                TableQuerySegment<Location> resultSegment = await _locationsTable.ExecuteQuerySegmentedAsync(query, token);
-
-                token = resultSegment.ContinuationToken;
-
-                locations.AddRange(resultSegment.Results);
-            } while (token != null);
-
-            return locations;
-        }
+        }*/
 
         public async Task DeleteLocation(string partitionKey, string rowKey)
         {
-            Task<List<Location>> locationTask =  GetLocationById(partitionKey, rowKey);
-            List<Location> location = locationTask.Result;
-            if (location.Any())
+            Task<Location> locationTask =  GetLocationById(partitionKey, rowKey);
+            Location location = locationTask.Result;
+            if (location != null)
             {
-                var deleteOperation = TableOperation.Delete(location.First());
+                var deleteOperation = TableOperation.Delete(location);
                 await _locationsTable.ExecuteAsync(deleteOperation);
             }
             else
@@ -150,15 +149,15 @@ namespace CityAlert.Repositories
 
         public async Task UpdateLocation(Location location)
         {
-            Task<List<Location>> locationTask = GetLocationById(location.PartitionKey, location.RowKey);
-            List<Location> locationResult = locationTask.Result;
-            if (locationResult.Any())
+            Task<Location> locationTask = GetLocationById(location.PartitionKey, location.RowKey);
+            Location locationResult = locationTask.Result;
+            if (locationResult != null)
             {
-                locationResult.First().Longitude = location.Longitude;
-                locationResult.First().Latitude = location.Latitude;
-                locationResult.First().Comments = location.Comments;
+                locationResult.Longitude = location.Longitude;
+                locationResult.Latitude = location.Latitude;
+                locationResult.Comments = location.Comments;
 
-                var updateOperation = TableOperation.Replace(locationResult.First());
+                var updateOperation = TableOperation.Replace(locationResult);
                 await _locationsTable.ExecuteAsync(updateOperation);
             }
             else

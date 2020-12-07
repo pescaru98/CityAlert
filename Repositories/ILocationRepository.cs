@@ -10,7 +10,7 @@ namespace CityAlert.Repositories
     {
         public Task<List<Location>> GetLocations();
 
-        public Task<List<Location>> GetLocationById(string partitionKey, string rowKey);
+        public Task<Location> GetLocationById(string partitionKey, string rowKey);
 
         public Task CreateLocation(Location location);
 
@@ -18,8 +18,8 @@ namespace CityAlert.Repositories
 
         public Task UpdateLocation(Location location);
 
-        public Task<List<Location>> GetLocationByCoordinates(double latitude, double longitude);
+        public Task<Location> GetLocationByCoordinates(double latitude, double longitude);
 
-        public Task<List<Location>> GetLocationByCoordinatesInRadius(double latitude, double longitude, double radiusInMeters);
+        //public Task<List<Location>> GetLocationsByCoordinatesInRadius(double latitude, double longitude, double radiusInMeters);
     }
 }
