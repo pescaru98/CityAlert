@@ -26,18 +26,18 @@ namespace CityAlert.Controllers
             _locationRepository = locationRepository;
         }
 
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<IEnumerable<Location>> Get(){
             return await _locationRepository.GetLocations();
         }
 
-        [HttpGet("{partitionKey}/{rowKey}")]
+        [HttpGet("GetById/{partitionKey}/{rowKey}")]
         public async Task<List<Location>> GetLocationById(string partitionKey, string rowKey)
         {
             return await _locationRepository.GetLocationById(partitionKey,rowKey);
         }
 
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task CreateLocation([FromBody] Location location)
         {
             try
@@ -49,7 +49,7 @@ namespace CityAlert.Controllers
             }
         }
 
-/*        [HttpDelete("delete/{partitionKey}/{rowKey}")]
+        [HttpDelete("Delete/{partitionKey}/{rowKey}")]
         public async Task DeleteLocation(string partitionKey, string rowKey)
         {
             try
@@ -60,7 +60,20 @@ namespace CityAlert.Controllers
             {
                 throw;
             }
-        }*/
+        }
+
+        [HttpPut("Update")]
+        public async Task UpdateLocation([FromBody] Location location)
+        {
+            try
+            {
+                await _locationRepository.UpdateLocation(location);
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
 
 
     }

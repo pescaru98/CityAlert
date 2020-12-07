@@ -1,5 +1,5 @@
 {
-  "FilePath": "c:\\Users\\Mihai\\Desktop\\CityAlertRepo\\L02.csproj",
+  "FilePath": "c:\\Users\\Mihai\\Desktop\\CityAlertRepo\\CityAlert.csproj",
   "Configuration": {
     "ConfigurationName": "MVC-3.0",
     "LanguageVersion": "3.0",
@@ -14389,7 +14389,7 @@
     ],
     "CSharpLanguageVersion": 800
   },
-  "RootNamespace": "L02",
+  "RootNamespace": "CityAlert",
   "Documents": [],
   "SerializationFormat": "0.2"
 }

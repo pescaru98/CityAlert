@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "storage1": {
+      "restored": true,
+      "restoreTime": "2020-12-06T21:37:58.8587134Z"
+    },
+    "secrets1": {
+      "restored": true,
+      "restoreTime": "2020-12-06T21:38:12.5676669Z"
+    }
+  },
+  "parameters": {
+    "storage1.resourceGroupName": {
+      "Type": "resourceGroup",
+      "Value": "CityAlertApp"
+    },
+    "storage1.subscriptionId": {
+      "Type": "subscription",
+      "Value": "bf9d816b-1e43-4ec2-9ed6-065b67e9b421"
+    },
+    "secrets1.resourceGroupName": {
+      "Type": "resourceGroup",
+      "Value": "CityAlertApp"
+    },
+    "secrets1.subscriptionId": {
+      "Type": "subscription",
+      "Value": "bf9d816b-1e43-4ec2-9ed6-065b67e9b421"
+    }
+  }
+}

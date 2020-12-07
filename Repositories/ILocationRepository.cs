@@ -14,6 +14,8 @@ namespace CityAlert.Repositories
 
         public Task CreateLocation(Location location);
 
-        //public Task DeleteLocation(string partitionKey, string rowKey);
+        public Task DeleteLocation(string partitionKey, string rowKey);
+
+        public Task UpdateLocation(Location location);
     }
 }

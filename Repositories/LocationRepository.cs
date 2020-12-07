@@ -37,11 +37,21 @@ namespace CityAlert.Repositories
 
         public async Task CreateLocation(Location location)
         {
-            
+            Task<List<Location>> locationTask = GetLocationById(location.PartitionKey, location.RowKey);
+            List<Location> locationResult = locationTask.Result;
+            if (!locationResult.Any())
+            {
+
                 var insertOperation = TableOperation.Insert(location);
 
                 await _locationsTable.ExecuteAsync(insertOperation);
+            }
+            else
+            {
+                //Message: already existent
+            }
         }
+
 
         public async Task<List<Location>> GetLocationById(string partitionKey, string rowKey)
         {
@@ -81,5 +91,39 @@ namespace CityAlert.Repositories
 
             return locations;
         }
+
+        public async Task DeleteLocation(string partitionKey, string rowKey)
+        {
+            Task<List<Location>> locationTask =  GetLocationById(partitionKey, rowKey);
+            List<Location> location = locationTask.Result;
+            if (location.Any())
+            {
+                var deleteOperation = TableOperation.Delete(location.First());
+                await _locationsTable.ExecuteAsync(deleteOperation);
+            }
+            else
+            {
+                //Message could not be found
+            }
+        }
+
+        public async Task UpdateLocation(Location location)
+        {
+            Task<List<Location>> locationTask = GetLocationById(location.PartitionKey, location.RowKey);
+            List<Location> locationResult = locationTask.Result;
+            if (locationResult.Any())
+            {
+                locationResult.First().Longitude = location.Longitude;
+                locationResult.First().Latitude = location.Latitude;
+
+                var updateOperation = TableOperation.Replace(locationResult.First());
+                await _locationsTable.ExecuteAsync(updateOperation);
+            }
+            else
+            {
+                //Message could not be found
+            }
+        }
+
     }
 }
