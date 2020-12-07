@@ -17,5 +17,9 @@ namespace CityAlert.Repositories
         public Task DeleteLocation(string partitionKey, string rowKey);
 
         public Task UpdateLocation(Location location);
+
+        public Task<List<Location>> GetLocationByCoordinates(double latitude, double longitude);
+
+        public Task<List<Location>> GetLocationByCoordinatesInRadius(double latitude, double longitude, double radiusInMeters);
     }
 }

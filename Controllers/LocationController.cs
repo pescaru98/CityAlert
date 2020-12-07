@@ -75,6 +75,20 @@ namespace CityAlert.Controllers
             }
         }
 
+        [HttpGet("GetByCoordinates/{latitude}/{longitude}")]
+        public async Task<List<Location>> GetByCoordinates(double latitude, double longitude)
+        {
+
+              return await _locationRepository.GetLocationByCoordinates(latitude,longitude);
+
+        }
+
+        [HttpGet("GetByCoordinates/{latitude}/{longitude}/{radius}")]
+        public async Task<List<Location>> GetByCoordinatesInRadius(double latitude, double longitude,double radiusInMeters)
+        {
+             return await _locationRepository.GetLocationByCoordinatesInRadius(latitude, longitude, radiusInMeters);
+        }
+
 
     }
 }

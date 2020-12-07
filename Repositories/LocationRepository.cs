@@ -37,11 +37,12 @@ namespace CityAlert.Repositories
 
         public async Task CreateLocation(Location location)
         {
-            Task<List<Location>> locationTask = GetLocationById(location.PartitionKey, location.RowKey);
+            Guid GeneratedRowKey = Guid.NewGuid();
+            Task<List<Location>> locationTask = GetLocationById(location.PartitionKey, GeneratedRowKey.ToString());
             List<Location> locationResult = locationTask.Result;
             if (!locationResult.Any())
             {
-
+                location.RowKey = GeneratedRowKey.ToString();
                 var insertOperation = TableOperation.Insert(location);
 
                 await _locationsTable.ExecuteAsync(insertOperation);
@@ -92,6 +93,46 @@ namespace CityAlert.Repositories
             return locations;
         }
 
+        public async Task<List<Location>> GetLocationByCoordinates(double latitude, double longitude)
+        {
+            var locations = new List<Location>();
+
+            TableQuery<Location> query = new TableQuery<Location>()
+               .Where(TableQuery.GenerateFilterConditionForDouble("Latitude", QueryComparisons.Equal, latitude))
+               .Where(TableQuery.GenerateFilterConditionForDouble("Longitude", QueryComparisons.Equal, longitude));
+            TableContinuationToken token = null;
+            do
+            {
+                TableQuerySegment<Location> resultSegment = await _locationsTable.ExecuteQuerySegmentedAsync(query, token);
+
+                token = resultSegment.ContinuationToken;
+
+                locations.AddRange(resultSegment.Results);
+            } while (token != null);
+
+            return locations;
+        }
+
+        public async Task<List<Location>> GetLocationByCoordinatesInRadius(double latitude, double longitude, double radiusInMeters)
+        {
+            var locations = new List<Location>();
+
+            TableQuery<Location> query = new TableQuery<Location>()
+               .Where(TableQuery.GenerateFilterConditionForDouble("Latitude", QueryComparisons.Equal, latitude))
+               .Where(TableQuery.GenerateFilterConditionForDouble("Longitude", QueryComparisons.Equal, longitude));
+            TableContinuationToken token = null;
+            do
+            {
+                TableQuerySegment<Location> resultSegment = await _locationsTable.ExecuteQuerySegmentedAsync(query, token);
+
+                token = resultSegment.ContinuationToken;
+
+                locations.AddRange(resultSegment.Results);
+            } while (token != null);
+
+            return locations;
+        }
+
         public async Task DeleteLocation(string partitionKey, string rowKey)
         {
             Task<List<Location>> locationTask =  GetLocationById(partitionKey, rowKey);
@@ -115,6 +156,7 @@ namespace CityAlert.Repositories
             {
                 locationResult.First().Longitude = location.Longitude;
                 locationResult.First().Latitude = location.Latitude;
+                locationResult.First().Comments = location.Comments;
 
                 var updateOperation = TableOperation.Replace(locationResult.First());
                 await _locationsTable.ExecuteAsync(updateOperation);
@@ -124,6 +166,7 @@ namespace CityAlert.Repositories
                 //Message could not be found
             }
         }
+
 
     }
 }
