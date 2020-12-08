@@ -1,10 +1,12 @@
 ﻿using CityAlert.Entities;
+using CityAlert.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace CityAlert.Repositories
@@ -35,7 +37,7 @@ namespace CityAlert.Repositories
             await _locationsTable.CreateIfNotExistsAsync();
         }
 
-        public async Task CreateLocation(Location location)
+        public async Task<HttpResponseMessage> CreateLocation(Location location)
         {
             Guid GeneratedRowKey = Guid.NewGuid();
             Task<Location> locationTask = GetLocationById(location.PartitionKey, GeneratedRowKey.ToString());
@@ -46,10 +48,11 @@ namespace CityAlert.Repositories
                 var insertOperation = TableOperation.Insert(location);
 
                 await _locationsTable.ExecuteAsync(insertOperation);
+                return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
             }
             else
             {
-                //Message: already existent
+                return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.NotFound, MyHttpResponse.ERROR_ITEM_EXISTENT);
             }
         }
 
@@ -132,7 +135,7 @@ namespace CityAlert.Repositories
             return locations;
         }*/
 
-        public async Task DeleteLocation(string partitionKey, string rowKey)
+        public async Task<HttpResponseMessage> DeleteLocation(string partitionKey, string rowKey)
         {
             Task<Location> locationTask =  GetLocationById(partitionKey, rowKey);
             Location location = locationTask.Result;
@@ -140,14 +143,16 @@ namespace CityAlert.Repositories
             {
                 var deleteOperation = TableOperation.Delete(location);
                 await _locationsTable.ExecuteAsync(deleteOperation);
+                return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
             }
             else
             {
-                //Message could not be found
+                return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.NotFound, MyHttpResponse.ERROR_ITEM_NOT_FOUND);
+
             }
         }
 
-        public async Task UpdateLocation(Location location)
+        public async Task<HttpResponseMessage> UpdateLocation(Location location)
         {
             Task<Location> locationTask = GetLocationById(location.PartitionKey, location.RowKey);
             Location locationResult = locationTask.Result;
@@ -159,10 +164,11 @@ namespace CityAlert.Repositories
 
                 var updateOperation = TableOperation.Replace(locationResult);
                 await _locationsTable.ExecuteAsync(updateOperation);
+                return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
             }
             else
             {
-                //Message could not be found
+                return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.NotFound, MyHttpResponse.ERROR_ITEM_NOT_FOUND);
             }
         }
 

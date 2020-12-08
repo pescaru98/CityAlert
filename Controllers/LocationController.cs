@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using CityAlert.Entities;
 using CityAlert.Repositories;
+using System.Net.Http;
 
 namespace CityAlert.Controllers
 {
@@ -38,11 +39,11 @@ namespace CityAlert.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task CreateLocation([FromBody] Location location)
+        public async Task<HttpResponseMessage> CreateLocation([FromBody] Location location)
         {
             try
             {
-               await _locationRepository.CreateLocation(location);
+               return await _locationRepository.CreateLocation(location);
             }catch(System.Exception)
             {
                 throw;
@@ -50,11 +51,11 @@ namespace CityAlert.Controllers
         }
 
         [HttpDelete("Delete/{partitionKey}/{rowKey}")]
-        public async Task DeleteLocation(string partitionKey, string rowKey)
+        public async Task<HttpResponseMessage> DeleteLocation(string partitionKey, string rowKey)
         {
             try
             {
-                await _locationRepository.DeleteLocation(partitionKey, rowKey);
+                return await _locationRepository.DeleteLocation(partitionKey, rowKey);
             }
             catch (System.Exception)
             {
@@ -63,11 +64,11 @@ namespace CityAlert.Controllers
         }
 
         [HttpPut("Update")]
-        public async Task UpdateLocation([FromBody] Location location)
+        public async Task<HttpResponseMessage> UpdateLocation([FromBody] Location location)
         {
             try
             {
-                await _locationRepository.UpdateLocation(location);
+                return await _locationRepository.UpdateLocation(location);
             }
             catch (System.Exception)
             {

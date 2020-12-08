@@ -7,13 +7,13 @@ namespace CityAlert.Entities
 {
     public class Message : IResult
     {
-        public Message(string messageId, string messageText)
+        public Message(int messageId, string messageText)
         {
             MessageId = messageId;
             MessageText = messageText;
         }
 
-        public string MessageId { get; set; }
+        public int MessageId { get; set; }
         public string MessageText { get; set; }
     }
 }
