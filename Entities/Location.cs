@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CityAlert.Entities
 {
-    public class Location : TableEntity, IResult
+    public class Location : TableEntity
     {
         public Location(string city, string key)
         {

@@ -90,6 +90,44 @@ namespace CityAlert.Controllers
              return await _locationRepository.GetLocationsByCoordinatesInRadius(latitude, longitude, radiusInMeters);
         }*/
 
+        [HttpPost("AddInQueueToCreate")]
+        public async Task<HttpResponseMessage> AddInQueueToCreate([FromBody] Location location)
+        {
+            try
+            {
+                return await _locationRepository.AddInQueueToCreate(location);
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
 
+
+        [HttpPut("AddInQueueToUpdate")]
+        public async Task<HttpResponseMessage> AddInQueueToUpdate([FromBody] Location location)
+        {
+            try
+            {
+                return await _locationRepository.AddInQueueToUpdate(location);
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpDelete("AddInQueueToDelete/{partitionKey}/{rowKey}")]
+        public async Task<HttpResponseMessage> AddInQueueToDelete(string partitionKey, string rowKey)
+        {
+            try
+            {
+                return await _locationRepository.AddInQueueToDelete(partitionKey, rowKey);
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+        }
     }
 }

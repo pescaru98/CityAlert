@@ -22,5 +22,11 @@ namespace CityAlert.Repositories
         public Task<Location> GetLocationByCoordinates(double latitude, double longitude);
 
         //public Task<List<Location>> GetLocationsByCoordinatesInRadius(double latitude, double longitude, double radiusInMeters);
+
+        public Task<HttpResponseMessage> AddInQueueToCreate(Location location);
+
+        public Task<HttpResponseMessage> AddInQueueToUpdate(Location location);
+
+        public Task<HttpResponseMessage> AddInQueueToDelete(string partitionKey, string rowKey);
     }
 }

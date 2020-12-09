@@ -1,8 +1,10 @@
-﻿using CityAlert.Entities;
+﻿using Azure.Storage.Queues;
+using CityAlert.Entities;
 using CityAlert.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +19,17 @@ namespace CityAlert.Repositories
         private CloudTableClient _tableClient;
         private CloudTable _locationsTable;
         private string _connectionString;
-        private string _tableName = "Location";
+        private readonly string _tableName = "Location";
+        private readonly string _queueName = "ins-upd-del-queue";
+
 
         public LocationRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetValue(typeof(string), "AzureStorageConnectionString").ToString();
             Task.Run(async () => { await InitializeTable(); }).GetAwaiter().GetResult();
         }
+
+
 
         private async Task InitializeTable()
         {
@@ -36,6 +42,8 @@ namespace CityAlert.Repositories
 
             await _locationsTable.CreateIfNotExistsAsync();
         }
+
+
 
         public async Task<HttpResponseMessage> CreateLocation(Location location)
         {
@@ -55,6 +63,8 @@ namespace CityAlert.Repositories
                 return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.NotFound, MyHttpResponse.ERROR_ITEM_EXISTENT);
             }
         }
+
+
 
         public async Task<Location> GetLocationById(string partitionKey, string rowKey)
         {
@@ -76,6 +86,8 @@ namespace CityAlert.Repositories
             return locations.FirstOrDefault();
         }
 
+
+
         public async Task<List<Location>> GetLocations()
         {
             var locations = new List<Location>();
@@ -94,6 +106,8 @@ namespace CityAlert.Repositories
 
             return locations;
         }
+
+
 
         public async Task<Location> GetLocationByCoordinates(double latitude, double longitude)
         {
@@ -115,6 +129,8 @@ namespace CityAlert.Repositories
             return locations.FirstOrDefault();
         }
 
+
+
 /*        public async Task<List<Location>> GetLocationsByCoordinatesInRadius(double latitude, double longitude, double radiusInMeters)
         {
             var locations = new List<Location>();
@@ -135,6 +151,8 @@ namespace CityAlert.Repositories
             return locations;
         }*/
 
+
+
         public async Task<HttpResponseMessage> DeleteLocation(string partitionKey, string rowKey)
         {
             Task<Location> locationTask =  GetLocationById(partitionKey, rowKey);
@@ -151,6 +169,8 @@ namespace CityAlert.Repositories
 
             }
         }
+
+
 
         public async Task<HttpResponseMessage> UpdateLocation(Location location)
         {
@@ -173,5 +193,52 @@ namespace CityAlert.Repositories
         }
 
 
+
+        public async Task<HttpResponseMessage> AddInQueueToCreate(Location location)
+        {
+            LocationOperation CreateOperation = new LocationOperation(location, LocationOperation.CREATE_OPERATION);
+
+            var jsonLocation = JsonConvert.SerializeObject(CreateOperation);
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(jsonLocation);
+            var base64String = System.Convert.ToBase64String(plainTextBytes);
+
+            QueueClient queueClient = new QueueClient(_connectionString, _queueName);
+            await queueClient.SendMessageAsync(base64String);
+
+            return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
+        }
+
+
+
+
+        public async Task<HttpResponseMessage> AddInQueueToUpdate(Location location)
+        {
+            LocationOperation UpdateOperation = new LocationOperation(location, LocationOperation.UPDATE_OPERATION);
+
+            var jsonLocation = JsonConvert.SerializeObject(UpdateOperation);
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(jsonLocation);
+            var base64String = System.Convert.ToBase64String(plainTextBytes);
+
+            QueueClient queueClient = new QueueClient(_connectionString, _queueName);
+            await queueClient.SendMessageAsync(base64String);
+
+            return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
+        }
+
+
+
+        public async Task<HttpResponseMessage> AddInQueueToDelete(string partitionKey, string rowKey)
+        {
+            LocationOperation DeleteOperation = new LocationOperation(new TableEntity(partitionKey, rowKey), LocationOperation.DELETE_OPERATION);
+
+            var jsonLocation = JsonConvert.SerializeObject(DeleteOperation);
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(jsonLocation);
+            var base64String = System.Convert.ToBase64String(plainTextBytes);
+
+            QueueClient queueClient = new QueueClient(_connectionString, _queueName);
+            await queueClient.SendMessageAsync(base64String);
+
+            return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
+        }
     }
 }
