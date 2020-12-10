@@ -1,4 +1,5 @@
 using System;
+using CityAlert.ControllerValidators;
 using CityAlert.Repositories;
 using InsUpdDelWorker.Entities;
 using Microsoft.Azure.WebJobs;
@@ -20,18 +21,34 @@ namespace InsUpdDelWorker
         }
 
         [FunctionName("Worker")]
-        public async static void Run([QueueTrigger("ins-upd-del-queue", Connection = "cityalertstorage_STORAGE")]string myQueueItem, ILogger log)
+        public async static void Run([QueueTrigger("ins-upd-del-queue", Connection = "cityalertstorage_STORAGE")] string myQueueItem, ILogger log)
         {
             log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
 
             LocationOperation locationOp = JsonConvert.DeserializeObject<LocationOperation>(myQueueItem);
 
-            if (locationOp.OperationId == LocationOperation.CREATE_OPERATION)
-                await _locationRepository.CreateLocation(locationOp.location);
-            else if (locationOp.OperationId == LocationOperation.UPDATE_OPERATION)
-                await _locationRepository.UpdateLocation(locationOp.location);
-            else if (locationOp.OperationId == LocationOperation.DELETE_OPERATION)
-                await _locationRepository.DeleteLocation(locationOp.location.PartitionKey, locationOp.location.RowKey);
+            try
+            {
+                if (locationOp.OperationId == LocationOperation.CREATE_OPERATION)
+                {
+                    LocationValidator.validateCreateLocation(locationOp.location);
+                    await _locationRepository.CreateLocation(locationOp.location);
+                }
+                else if (locationOp.OperationId == LocationOperation.UPDATE_OPERATION)
+                {
+                    LocationValidator.validateUpdateLocation(locationOp.location);
+                    await _locationRepository.UpdateLocation(locationOp.location);
+                }
+                else if (locationOp.OperationId == LocationOperation.DELETE_OPERATION)
+                {
+                    LocationValidator.validateDeleteLocation(locationOp.location.PartitionKey, locationOp.location.RowKey);
+                    await _locationRepository.DeleteLocation(locationOp.location.PartitionKey, locationOp.location.RowKey);
+                }
+            }
+            catch (Exception)
+            {
+                //return notification
+            }
         }
     }
 }

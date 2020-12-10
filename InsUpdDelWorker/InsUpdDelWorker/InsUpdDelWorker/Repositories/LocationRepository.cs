@@ -58,10 +58,11 @@ namespace CityAlert.Repositories
                 var insertOperation = TableOperation.Insert(location);
 
                 await _locationsTable.ExecuteAsync(insertOperation);
+                //Operation succes notification
             }
             else
             {
-                
+                //Operation fail notification
             }
         }
 
@@ -93,11 +94,11 @@ namespace CityAlert.Repositories
             {
                 var deleteOperation = TableOperation.Delete(location);
                 await _locationsTable.ExecuteAsync(deleteOperation);
-               
+                //Operation succes notification
             }
             else
             {
-
+                //Operation fail notification
             }
         }
 
@@ -110,14 +111,14 @@ namespace CityAlert.Repositories
                 locationResult.Longitude = location.Longitude;
                 locationResult.Latitude = location.Latitude;
                 locationResult.Comments = location.Comments;
-                //locationResult.Latitude = location.Latitude;
-                //locationResult.Comments = location.Comments;
 
                 var updateOperation = TableOperation.Replace(locationResult);
                 await _locationsTable.ExecuteAsync(updateOperation);
+                //Operation succes notification
             }
             else
             {
+                //Operation fail notification
             }
         }
 

@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using CityAlert.Entities;
 using CityAlert.Repositories;
 using System.Net.Http;
+using CityAlert.ControllerValidators;
+using CityAlert.Utils;
 
 namespace CityAlert.Controllers
 {
@@ -43,10 +45,12 @@ namespace CityAlert.Controllers
         {
             try
             {
+                LocationControllerValidator.validateCreateLocation(location);
                return await _locationRepository.CreateLocation(location);
             }catch(System.Exception)
             {
-                throw;
+                return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.BadRequest,MyHttpResponse.ERROR_INVALID);
+                //throw;
             }
         }
 
@@ -55,11 +59,13 @@ namespace CityAlert.Controllers
         {
             try
             {
+                LocationControllerValidator.validateDeleteLocation(partitionKey,rowKey);
                 return await _locationRepository.DeleteLocation(partitionKey, rowKey);
             }
             catch (System.Exception)
             {
-                throw;
+                return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.BadRequest, MyHttpResponse.ERROR_INVALID);
+                //throw;
             }
         }
 
@@ -68,11 +74,13 @@ namespace CityAlert.Controllers
         {
             try
             {
+                LocationControllerValidator.validateUpdateLocation(location);
                 return await _locationRepository.UpdateLocation(location);
             }
             catch (System.Exception)
             {
-                throw;
+                return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.BadRequest, MyHttpResponse.ERROR_INVALID);
+                //throw;
             }
         }
 

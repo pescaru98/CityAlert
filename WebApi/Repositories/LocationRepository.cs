@@ -68,6 +68,7 @@ namespace CityAlert.Repositories
 
         public async Task<Location> GetLocationById(string partitionKey, string rowKey)
         {
+      
             var locations = new List<Location>();
 
             TableQuery<Location> query = new TableQuery<Location>()
