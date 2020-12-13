@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace CityAlert.Entities
 {
+    //Possible improvement: add city and key as class attributes, add them DataAnnotations so you eliminate the others validators
+    //or add [Validator] annotation to validate them
     public class Location : TableEntity
     {
         public Location(string city, string key)
