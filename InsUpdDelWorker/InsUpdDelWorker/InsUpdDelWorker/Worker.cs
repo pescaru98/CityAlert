@@ -9,19 +9,19 @@ using Newtonsoft.Json;
 
 namespace InsUpdDelWorker
 {
-    [StorageAccount("cityalertstorage_STORAGE")]
+    
     public static class Worker
     {
         static LocationRepository _locationRepository;
         static string _connectionString;
 
         static Worker(){
-            _connectionString = System.Environment.GetEnvironmentVariable("cityalertstorage_STORAGE");
+            _connectionString = System.Environment.GetEnvironmentVariable("storageaccountcityab5a6_STORAGE");
             _locationRepository = new LocationRepository(_connectionString);
         }
 
         [FunctionName("Worker")]
-        public async static void Run([QueueTrigger("ins-upd-del-queue", Connection = "cityalertstorage_STORAGE")] string myQueueItem, ILogger log)
+        public async static void Run([QueueTrigger("ins-upd-del-queue", Connection = "storageaccountcityab5a6_STORAGE")] string myQueueItem, ILogger log)
         {
             log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
 

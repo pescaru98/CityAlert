@@ -27,7 +27,7 @@ namespace CityAlert.Controllers
         }
 
         [HttpPost("Auth")]
-        public IActionResult Auth(AuthenticateRequest request)
+        public IActionResult Auth([FromBody] AuthenticateRequest request)
         {
             var response = _userRepository.Authenticate(request);
 

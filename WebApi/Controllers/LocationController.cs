@@ -40,6 +40,7 @@ namespace CityAlert.Controllers
             return await _locationRepository.GetLocationById(partitionKey,rowKey);
         }
 
+        [Authorize]
         [HttpPost("Create")]
         public async Task<HttpResponseMessage> CreateLocation([FromBody] Location location)
         {
@@ -54,6 +55,7 @@ namespace CityAlert.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("Delete/{partitionKey}/{rowKey}")]
         public async Task<HttpResponseMessage> DeleteLocation(string partitionKey, string rowKey)
         {
@@ -69,6 +71,7 @@ namespace CityAlert.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("Update")]
         public async Task<HttpResponseMessage> UpdateLocation([FromBody] Location location)
         {
@@ -84,6 +87,7 @@ namespace CityAlert.Controllers
             }
         }
 
+
         [HttpGet("GetByCoordinates/{latitude}/{longitude}")]
         public async Task<Location> GetByCoordinates(double latitude, double longitude)
         {
@@ -92,12 +96,13 @@ namespace CityAlert.Controllers
 
         }
 
-/*        [HttpGet("GetByCoordinates/{latitude}/{longitude}/{radius}")]
-        public async Task<List<Location>> GetByCoordinatesInRadius(double latitude, double longitude,double radiusInMeters)
-        {
-             return await _locationRepository.GetLocationsByCoordinatesInRadius(latitude, longitude, radiusInMeters);
-        }*/
+        /*        [HttpGet("GetByCoordinates/{latitude}/{longitude}/{radius}")]
+                public async Task<List<Location>> GetByCoordinatesInRadius(double latitude, double longitude,double radiusInMeters)
+                {
+                     return await _locationRepository.GetLocationsByCoordinatesInRadius(latitude, longitude, radiusInMeters);
+                }*/
 
+        [Authorize]
         [HttpPost("AddInQueueToCreate")]
         public async Task<HttpResponseMessage> AddInQueueToCreate([FromBody] Location location)
         {
@@ -111,7 +116,7 @@ namespace CityAlert.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpPut("AddInQueueToUpdate")]
         public async Task<HttpResponseMessage> AddInQueueToUpdate([FromBody] Location location)
         {
@@ -125,6 +130,7 @@ namespace CityAlert.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("AddInQueueToDelete/{partitionKey}/{rowKey}")]
         public async Task<HttpResponseMessage> AddInQueueToDelete(string partitionKey, string rowKey)
         {

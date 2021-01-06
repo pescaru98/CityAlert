@@ -47,6 +47,7 @@ namespace CityAlert
             {
                 builder.AddBlobServiceClient(Configuration["ConnectionStrings:AzureStorageConnectionString:blob"], preferMsi: true);
                 builder.AddQueueServiceClient(Configuration["ConnectionStrings:AzureStorageConnectionString:queue"], preferMsi: true);
+                builder.AddQueueServiceClient(Configuration["ConnectionStrings:AzureStorageFunctionAppConnString:queue"], preferMsi: true);
             });
         }
 

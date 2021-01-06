@@ -19,6 +19,9 @@ namespace CityAlert.Repositories
         private CloudTableClient _tableClient;
         private CloudTable _locationsTable;
         private string _connectionString;
+        private CloudTableClient _tableClientQueue;
+        private CloudTable _locationsTableQueue;
+        private string _connectionStringQueue;
         private readonly string _tableName = "Location";
         private readonly string _queueName = "ins-upd-del-queue";
 
@@ -26,6 +29,7 @@ namespace CityAlert.Repositories
         public LocationRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetValue(typeof(string), "AzureStorageConnectionString").ToString();
+            _connectionStringQueue = configuration.GetValue(typeof(string), "AzureStorageFunctionAppConnString").ToString();
             Task.Run(async () => { await InitializeTable(); }).GetAwaiter().GetResult();
         }
 
@@ -40,7 +44,14 @@ namespace CityAlert.Repositories
 
             _locationsTable = _tableClient.GetTableReference(_tableName);
 
+            var accountQueue = CloudStorageAccount.Parse(_connectionStringQueue);
+            _tableClientQueue = accountQueue.CreateCloudTableClient();
+
+            _locationsTableQueue = _tableClientQueue.GetTableReference(_tableName);
+
+
             await _locationsTable.CreateIfNotExistsAsync();
+            await _locationsTableQueue.CreateIfNotExistsAsync();
         }
 
 
@@ -55,7 +66,7 @@ namespace CityAlert.Repositories
                 location.RowKey = GeneratedRowKey.ToString();
                 var insertOperation = TableOperation.Insert(location);
 
-                await _locationsTable.ExecuteAsync(insertOperation);
+                await _locationsTableQueue.ExecuteAsync(insertOperation);
                 return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
             }
             else
@@ -77,7 +88,7 @@ namespace CityAlert.Repositories
             TableContinuationToken token = null;
             do
             {
-                TableQuerySegment<Location> resultSegment = await _locationsTable.ExecuteQuerySegmentedAsync(query, token);
+                TableQuerySegment<Location> resultSegment = await _locationsTableQueue.ExecuteQuerySegmentedAsync(query, token);
 
                 token = resultSegment.ContinuationToken;
 
@@ -98,7 +109,7 @@ namespace CityAlert.Repositories
 
             do
             {
-                TableQuerySegment<Location> resultSegment = await _locationsTable.ExecuteQuerySegmentedAsync(query, token);
+                TableQuerySegment<Location> resultSegment = await _locationsTableQueue.ExecuteQuerySegmentedAsync(query, token);
 
                 token = resultSegment.ContinuationToken;
 
@@ -120,7 +131,7 @@ namespace CityAlert.Repositories
             TableContinuationToken token = null;
             do
             {
-                TableQuerySegment<Location> resultSegment = await _locationsTable.ExecuteQuerySegmentedAsync(query, token);
+                TableQuerySegment<Location> resultSegment = await _locationsTableQueue.ExecuteQuerySegmentedAsync(query, token);
 
                 token = resultSegment.ContinuationToken;
 
@@ -132,25 +143,25 @@ namespace CityAlert.Repositories
 
 
 
-/*        public async Task<List<Location>> GetLocationsByCoordinatesInRadius(double latitude, double longitude, double radiusInMeters)
-        {
-            var locations = new List<Location>();
+        /*        public async Task<List<Location>> GetLocationsByCoordinatesInRadius(double latitude, double longitude, double radiusInMeters)
+                {
+                    var locations = new List<Location>();
 
-            TableQuery<Location> query = new TableQuery<Location>()
-               .Where(TableQuery.GenerateFilterConditionForDouble("Latitude", QueryComparisons.Equal, latitude))
-               .Where(TableQuery.GenerateFilterConditionForDouble("Longitude", QueryComparisons.Equal, longitude));
-            TableContinuationToken token = null;
-            do
-            {
-                TableQuerySegment<Location> resultSegment = await _locationsTable.ExecuteQuerySegmentedAsync(query, token);
+                    TableQuery<Location> query = new TableQuery<Location>()
+                       .Where(TableQuery.GenerateFilterConditionForDouble("Latitude", QueryComparisons.Equal, latitude))
+                       .Where(TableQuery.GenerateFilterConditionForDouble("Longitude", QueryComparisons.Equal, longitude));
+                    TableContinuationToken token = null;
+                    do
+                    {
+                        TableQuerySegment<Location> resultSegment = await _locationsTableQueue.ExecuteQuerySegmentedAsync(query, token);
 
-                token = resultSegment.ContinuationToken;
+                        token = resultSegment.ContinuationToken;
 
-                locations.AddRange(resultSegment.Results);
-            } while (token != null);
+                        locations.AddRange(resultSegment.Results);
+                    } while (token != null);
 
-            return locations;
-        }*/
+                    return locations;
+                }*/
 
 
 
@@ -161,7 +172,7 @@ namespace CityAlert.Repositories
             if (location != null)
             {
                 var deleteOperation = TableOperation.Delete(location);
-                await _locationsTable.ExecuteAsync(deleteOperation);
+                await _locationsTableQueue.ExecuteAsync(deleteOperation);
                 return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
             }
             else
@@ -184,7 +195,7 @@ namespace CityAlert.Repositories
                 locationResult.Comments = location.Comments;
 
                 var updateOperation = TableOperation.Replace(locationResult);
-                await _locationsTable.ExecuteAsync(updateOperation);
+                await _locationsTableQueue.ExecuteAsync(updateOperation);
                 return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
             }
             else
@@ -203,7 +214,7 @@ namespace CityAlert.Repositories
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(jsonLocation);
             var base64String = System.Convert.ToBase64String(plainTextBytes);
 
-            QueueClient queueClient = new QueueClient(_connectionString, _queueName);
+            QueueClient queueClient = new QueueClient(_connectionStringQueue, _queueName);
             await queueClient.SendMessageAsync(base64String);
 
             return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
@@ -220,7 +231,7 @@ namespace CityAlert.Repositories
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(jsonLocation);
             var base64String = System.Convert.ToBase64String(plainTextBytes);
 
-            QueueClient queueClient = new QueueClient(_connectionString, _queueName);
+            QueueClient queueClient = new QueueClient(_connectionStringQueue, _queueName);
             await queueClient.SendMessageAsync(base64String);
 
             return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);
@@ -236,7 +247,7 @@ namespace CityAlert.Repositories
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(jsonLocation);
             var base64String = System.Convert.ToBase64String(plainTextBytes);
 
-            QueueClient queueClient = new QueueClient(_connectionString, _queueName);
+            QueueClient queueClient = new QueueClient(_connectionStringQueue, _queueName);
             await queueClient.SendMessageAsync(base64String);
 
             return MyHttpResponse.CreateResponse(System.Net.HttpStatusCode.OK, MyHttpResponse.SUCCESSFULL_OPERATION);

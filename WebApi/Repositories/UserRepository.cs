@@ -21,12 +21,16 @@ namespace CityAlert.Repositories
         private CloudTableClient _tableClient;
         private CloudTable _usersTable;
         private string _connectionString;
+        private CloudTableClient _tableClientQueue;
+        private CloudTable _usersTableQueue;
+        private string _connectionStringQueue;
         private readonly string _tableName = "User";
         private readonly AppSettings _appSettings;
 
         public UserRepository(IConfiguration configuration, IOptions<AppSettings> appSettings)
         {
             _connectionString = configuration.GetValue(typeof(string), "AzureStorageConnectionString").ToString();
+            _connectionStringQueue = configuration.GetValue(typeof(string), "AzureStorageFunctionAppConnString").ToString();
             _appSettings = appSettings.Value;
             Task.Run(async () => { await InitializeTable(); }).GetAwaiter().GetResult();
         }
@@ -36,13 +40,20 @@ namespace CityAlert.Repositories
         private async Task InitializeTable()
         {
 
-
             var account = CloudStorageAccount.Parse(_connectionString);
             _tableClient = account.CreateCloudTableClient();
 
             _usersTable = _tableClient.GetTableReference(_tableName);
 
-            await _usersTable.CreateIfNotExistsAsync();
+            var accountQueue = CloudStorageAccount.Parse(_connectionStringQueue);
+            _tableClientQueue = accountQueue.CreateCloudTableClient();
+
+            _usersTableQueue = _tableClientQueue.GetTableReference(_tableName);
+
+
+
+            await _usersTable.CreateIfNotExistsAsync(); 
+            await _usersTableQueue.CreateIfNotExistsAsync();
         }
 
 
@@ -52,11 +63,11 @@ namespace CityAlert.Repositories
 
             TableQuery<User> query = new TableQuery<User>()
                .Where(TableQuery.GenerateFilterCondition("Username", QueryComparisons.Equal, request.Username))
-               .Where(TableQuery.GenerateFilterCondition("Password", QueryComparisons.Equal, request.Password));
+               .Where(TableQuery.GenerateFilterCondition("Password", QueryComparisons.Equal, request.Password)); /*takes only last password condition*/
             TableContinuationToken token = null;
             do
             {
-                TableQuerySegment<User> resultSegment = await _usersTable.ExecuteQuerySegmentedAsync(query, token);
+                TableQuerySegment<User> resultSegment = await _usersTableQueue.ExecuteQuerySegmentedAsync(query, token);
 
                 token = resultSegment.ContinuationToken;
 
@@ -80,7 +91,7 @@ namespace CityAlert.Repositories
 
             do
             {
-                TableQuerySegment<User> resultSegment = await _usersTable.ExecuteQuerySegmentedAsync(query, token);
+                TableQuerySegment<User> resultSegment = await _usersTableQueue.ExecuteQuerySegmentedAsync(query, token);
 
                 token = resultSegment.ContinuationToken;
 
@@ -100,7 +111,7 @@ namespace CityAlert.Repositories
             TableContinuationToken token = null;
             do
             {
-                TableQuerySegment<User> resultSegment =  await _usersTable.ExecuteQuerySegmentedAsync(query, token);
+                TableQuerySegment<User> resultSegment =  await _usersTableQueue.ExecuteQuerySegmentedAsync(query, token);
 
                 token = resultSegment.ContinuationToken;
 
@@ -119,7 +130,7 @@ namespace CityAlert.Repositories
             TableContinuationToken token = null;
             do
             {
-                TableQuerySegment<User> resultSegment = await _usersTable.ExecuteQuerySegmentedAsync(query, token);
+                TableQuerySegment<User> resultSegment = await _usersTableQueue.ExecuteQuerySegmentedAsync(query, token);
 
                 token = resultSegment.ContinuationToken;
 

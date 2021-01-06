@@ -6,6 +6,12 @@
       "connectionId": "AzureStorageConnectionString",
       "secretStore": "AzureAppSettings"
     },
+    "storage2": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/storageaccountcityab5a6",
+      "type": "storage.azure",
+      "connectionId": "AzureStorageFunctionAppConnString",
+      "secretStore": "AzureAppSettings"
+    },
     "secrets1": {
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/CityAlertvault",
       "type": "secrets.keyVault",

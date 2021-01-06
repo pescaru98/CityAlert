@@ -4,6 +4,10 @@
       "type": "storage",
       "connectionId": "AzureStorageConnectionString"
     },
+    "storage2": {
+      "type": "storage",
+      "connectionId": "AzureStorageFunctionAppConnString"
+    },
     "secrets1": {
       "type": "secrets",
       "connectionId": "VaultUri"
